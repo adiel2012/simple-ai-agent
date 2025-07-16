@@ -47,14 +47,75 @@ A Node.js web application that provides a command prompt interface to interact w
 
 ## Available Functions
 
-The application comes with several built-in functions that LLMs can call:
+The LLM Function Agent includes 6 built-in local functions that LLMs can call to interact with the system:
 
-- `get_current_time`: Get current date and time
-- `get_weather`: Get weather information for a city (mock data)
-- `calculate`: Perform basic mathematical calculations
-- `read_file`: Read contents of a file
-- `list_files`: List files in a directory
-- `system_info`: Get system information
+### 1. **get_current_time**
+- **Purpose**: Returns current date and time
+- **Parameters**: None
+- **Returns**: ISO timestamp string
+- **Example**: `{ "time": "2024-01-15T10:30:45.123Z" }`
+- **Use Cases**: When LLM needs to know current time for scheduling, logging, or time-based responses
+
+### 2. **get_weather**
+- **Purpose**: Get weather information for a city (mock data)
+- **Parameters**: 
+  - `city` (required): City name
+  - `units` (optional): "celsius" or "fahrenheit" (default: celsius)
+- **Returns**: Mock weather data with temperature, condition
+- **Example**: `{ "city": "New York", "temperature": 22, "units": "celsius", "condition": "sunny" }`
+- **Use Cases**: Weather queries, travel planning discussions
+
+### 3. **calculate**
+- **Purpose**: Perform basic mathematical calculations
+- **Parameters**: 
+  - `expression` (required): Mathematical expression as string
+- **Returns**: Original expression and calculated result
+- **Example**: `{ "expression": "2 + 3 * 4", "result": 14 }`
+- **Use Cases**: Math problems, unit conversions, financial calculations
+- **Security**: Sanitized input (only allows numbers and basic operators)
+
+### 4. **read_file**
+- **Purpose**: Read contents of a file from the filesystem
+- **Parameters**: 
+  - `filepath` (required): Path to file to read
+- **Returns**: File path and content as string
+- **Example**: `{ "filepath": "./package.json", "content": "{\n  \"name\": \"llm-function-agent\"..." }`
+- **Use Cases**: Code analysis, configuration review, file inspection
+- **Security**: Limited to accessible file paths
+
+### 5. **list_files**
+- **Purpose**: List files and directories in a given path
+- **Parameters**: 
+  - `directory` (optional): Directory path (default: current directory)
+- **Returns**: Directory path and array of file/folder names
+- **Example**: `{ "directory": ".", "files": ["package.json", "server.js", "public/"] }`
+- **Use Cases**: Project exploration, file discovery, directory navigation
+
+### 6. **system_info**
+- **Purpose**: Get system information about the Node.js environment
+- **Parameters**: None
+- **Returns**: Platform, architecture, Node version, uptime, memory usage
+- **Example**: 
+```json
+{
+  "platform": "linux",
+  "architecture": "x64", 
+  "nodeVersion": "v18.17.0",
+  "uptime": 1234.56,
+  "memory": { "rss": 45678912, "heapTotal": 12345678 }
+}
+```
+- **Use Cases**: System diagnostics, performance monitoring, environment checks
+
+## How Function Calling Works
+
+1. **LLM Decision**: When you ask a question, the LLM analyzes if it needs to call a function
+2. **Function Selection**: LLM chooses appropriate function and parameters
+3. **Execution**: Function runs on the server with detailed logging
+4. **Result Integration**: LLM receives function result and incorporates it into response
+5. **User Response**: Final answer is displayed in the chat interface
+
+All function calls are logged to the console with execution timing and parameter details for debugging and monitoring.
 
 ## Adding New Functions
 
