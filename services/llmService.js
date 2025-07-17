@@ -9,7 +9,8 @@ class LLMService {
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': process.env.CLAUDE_API_KEY,
-          'anthropic-version': '2023-06-01'
+          'anthropic-version': '2023-06-01',
+          'anthropic-beta': 'tools-2024-04-04'
         }
       },
       openai: {
@@ -69,27 +70,34 @@ class LLMService {
     const payload = {
       model: 'claude-3-sonnet-20240229',
       max_tokens: 1024,
+      system: 'You are a helpful assistant with access to various functions. ALWAYS use the appropriate function when the user asks for information that can be obtained using the available functions. For example, if asked about package types in Magaya, use the listPackageTypes function. If asked about factorials, use the calculate_factorial function. Do not provide answers without using the relevant function first.',
       messages: [{ role: 'user', content: message }],
       tools: tools
     };
 
     try {
+      console.log('[DEBUG] Claude API request payload:', JSON.stringify(payload, null, 2));
+      
       const response = await axios.post(this.providers.claude.baseURL, payload, {
         headers: this.providers.claude.headers
       });
 
-      const content = response.data.content[0];
+      console.log('[DEBUG] Claude API response:', JSON.stringify(response.data, null, 2));
       
-      if (content.type === 'tool_use') {
+      // Check if there's a tool_use in the response
+      const toolUse = response.data.content.find(item => item.type === 'tool_use');
+      if (toolUse) {
         return {
           functionCall: {
-            name: content.name,
-            parameters: content.input
+            name: toolUse.name,
+            parameters: toolUse.input
           }
         };
       }
 
-      return { content: content.text };
+      // Otherwise return the text content
+      const textContent = response.data.content.find(item => item.type === 'text');
+      return { content: textContent?.text || 'No response content' };
     } catch (error) {
       throw new Error(`Claude API error: ${error.response?.data?.error?.message || error.message}`);
     }
@@ -111,7 +119,13 @@ class LLMService {
 
     const payload = {
       model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: message }],
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a helpful assistant with access to various functions. When a user asks for information that can be obtained using the available functions, please use the appropriate function to provide accurate and current data.'
+        },
+        { role: 'user', content: message }
+      ],
       tools: tools,
       tool_choice: 'auto'
     };
