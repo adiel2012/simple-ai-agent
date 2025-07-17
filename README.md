@@ -47,7 +47,7 @@ A Node.js web application that provides a command prompt interface to interact w
 
 ## Available Functions
 
-The LLM Function Agent includes 6 built-in local functions that LLMs can call to interact with the system:
+The LLM Function Agent includes 7 built-in local functions that LLMs can call to interact with the system:
 
 ### 1. **get_current_time**
 - **Purpose**: Returns current date and time
@@ -106,6 +106,15 @@ The LLM Function Agent includes 6 built-in local functions that LLMs can call to
 }
 ```
 - **Use Cases**: System diagnostics, performance monitoring, environment checks
+
+### 7. **calculate_factorial**
+- **Purpose**: Calculate the factorial of a number
+- **Parameters**: 
+  - `number` (required): Non-negative integer to calculate factorial for
+- **Returns**: Original number and calculated factorial result
+- **Example**: `{ "number": 5, "factorial": 120 }`
+- **Use Cases**: Mathematical calculations, combinatorics, algorithm demonstrations
+- **Security**: Input validation (non-negative integers only, max 170 to prevent overflow)
 
 ## How Function Calling Works
 

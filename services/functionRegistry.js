@@ -124,6 +124,42 @@ class FunctionRegistry {
         return info;
       }
     });
+
+    this.registerFunction({
+      name: 'calculate_factorial',
+      description: 'Calculate the factorial of a number (n! = n × (n-1) × ... × 1). Use this when the user asks for factorial calculations.',
+      parameters: {
+        number: { type: 'integer', description: 'The number to calculate factorial for (must be non-negative integer)' }
+      },
+      required: ['number'],
+      execute: (params) => {
+        console.log('[FUNCTION] calculate_factorial called with params:', params);
+        try {
+          const num = parseInt(params.number);
+          
+          if (isNaN(num) || num < 0) {
+            console.log('[FUNCTION] calculate_factorial error: Invalid input');
+            return { error: 'Number must be a non-negative integer' };
+          }
+          
+          if (num > 170) {
+            console.log('[FUNCTION] calculate_factorial error: Number too large');
+            return { error: 'Number too large (maximum is 170 to avoid overflow)' };
+          }
+          
+          let factorial = 1;
+          for (let i = 1; i <= num; i++) {
+            factorial *= i;
+          }
+          
+          console.log('[FUNCTION] calculate_factorial result:', { number: num, factorial: factorial });
+          return { number: num, factorial: factorial };
+        } catch (error) {
+          console.log('[FUNCTION] calculate_factorial error:', error.message);
+          return { error: 'Error calculating factorial' };
+        }
+      }
+    });
   }
 
   registerFunction(functionDef) {
