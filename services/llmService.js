@@ -10,7 +10,12 @@ class LLMService {
           'Content-Type': 'application/json',
           'x-api-key': process.env.CLAUDE_API_KEY,
           'anthropic-version': '2023-06-01',
-          'anthropic-beta': 'tools-2024-04-04'
+          'anthropic-beta': 'tools-2024-04-04',
+          // For token-efficient tools (Claude 3.7 Sonnet only)
+          //'anthropic-beta': 'token-efficient-tools-2025-02-19'
+
+          // For multiple enhanced features
+          //'anthropic-beta': 'fine-grained-tool-streaming-2025-05-14,interleaved-thinking-2025-05-14'
         }
       },
       openai: {
